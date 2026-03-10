@@ -164,20 +164,31 @@ export default function ForecastChart({ forecast, buffer, windowDays, startDate 
           left:`${((tip.x) / W) * 100}%`,
           top:`${(tip.y / (H + 24)) * 100}%`,
           transform:'translate(-50%, -115%)',
-          background:'var(--bg-float)',
+          background:'var(--bg-raised)',
           border:'1px solid var(--border)',
           borderRadius:8, padding:'8px 12px',
           fontSize:11, fontFamily:'var(--font-mono)',
           pointerEvents:'none', whiteSpace:'nowrap', zIndex:20,
-          boxShadow:'0 8px 24px rgba(0,0,0,0.4)',
+          boxShadow:'0 4px 16px rgba(0,0,0,0.1)',
         }}>
           <div style={{ color:'var(--ink-muted)', marginBottom:3, fontSize:10 }}>{fmt(tip.f.date)}</div>
           <div style={{ fontSize:15, fontFamily:'var(--font-serif)', color:'var(--ink)' }}>
             {usd(tip.f.runningBalance)}
           </div>
-          <div style={{ color: tip.f.type === 'Income' ? '#6B8F5E' : '#8A8278', marginTop:2 }}>
-            {tip.f.description}
-          </div>
+          {tip.f.description && (
+            <div style={{ color: tip.f.type === 'Income' ? 'var(--olive)' : 'var(--ink-muted)',
+              marginTop:2, fontSize:10 }}>
+              {tip.f.description}
+            </div>
+          )}
+          {(tip.f.usedAmount || tip.f.plannedAmount) && (
+            <div style={{
+              color: tip.f.type === 'Income' ? 'var(--olive)' : 'var(--amber)',
+              fontWeight:500, marginTop:2,
+            }}>
+              {tip.f.type === 'Income' ? '+' : '−'}{usd(Math.abs(tip.f.usedAmount || tip.f.plannedAmount || 0))}
+            </div>
+          )}
         </div>
       )}
     </div>

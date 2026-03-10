@@ -127,9 +127,9 @@ export default function UpcomingItems({ weeks, startDate }) {
                     <div style={{
                       width:28, height:28, borderRadius:7, flexShrink:0,
                       background: isIncome ? 'var(--olive-bg)' : 'var(--bg-float)',
-                      border:`1px solid ${isIncome ? 'rgba(107,143,94,0.2)' : 'var(--border-soft)'}`,
+                      border:`1px solid ${isIncome ? 'rgba(90,107,69,0.2)' : 'var(--border-soft)'}`,
                       display:'flex', alignItems:'center', justifyContent:'center',
-                      fontSize:12, color: isIncome ? '#6B8F5E' : 'var(--ink-muted)',
+                      fontSize:12, color: isIncome ? 'var(--olive)' : 'var(--ink-muted)',
                     }}>
                       {icon}
                     </div>
@@ -148,15 +148,20 @@ export default function UpcomingItems({ weeks, startDate }) {
                           </span>
                         )}
                       </div>
-                      <div style={{ fontSize:10, color:'var(--ink-muted)',
+                      <div style={{ fontSize:9, color:'var(--ink-faint)',
                         fontFamily:'var(--font-mono)', marginTop:1 }}>
                         {item.category}
+                        {item.runningBalance != null && (
+                          <span style={{ marginLeft:7, color:'var(--ink-muted)' }}>
+                            → {usd(item.runningBalance)}
+                          </span>
+                        )}
                       </div>
                     </div>
 
                     {/* Amount */}
                     <div style={{ fontFamily:'var(--font-mono)', fontSize:12, fontWeight:500,
-                      flexShrink:0, color: amt >= 0 ? '#6B8F5E' : 'var(--ink)' }}>
+                      flexShrink:0, color: amt >= 0 ? 'var(--olive)' : 'var(--ink)' }}>
                       {amt >= 0 ? '+' : '−'}{usd(Math.abs(amt))}
                     </div>
                   </div>
