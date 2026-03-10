@@ -3,29 +3,29 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  /* Core */
-  --ink:         #E8E2D9;
-  --ink-muted:   #8A8278;
-  --ink-faint:   #3D3830;
-  --bg:          #0D1117;
-  --bg-raised:   #141920;
-  --bg-float:    #1A2030;
-  --bg-hover:    #1F2738;
-  --border:      #232C3B;
-  --border-soft: #1C2332;
+  /* Warm parchment neutrals */
+  --ink:         #2E2A24;
+  --ink-muted:   #7A7068;
+  --ink-faint:   #B5A898;
+  --bg:          #F0EBE3;
+  --bg-raised:   #FDFAF6;
+  --bg-float:    #F5F0E8;
+  --bg-hover:    #EDE8DF;
+  --border:      #E0D8CE;
+  --border-soft: #EAE4DA;
 
   /* Accents */
-  --gold:        #C9A84C;
+  --gold:        #B8922A;
   --gold-dim:    #8A6E2A;
-  --gold-glow:   rgba(201,168,76,0.12);
-  --gold-bg:     rgba(201,168,76,0.07);
-  --olive:       #6B8F5E;
+  --gold-glow:   rgba(184,146,42,0.12);
+  --gold-bg:     #F5EDD8;
+  --olive:       #5A6B45;
   --olive-dim:   #3E5435;
-  --olive-bg:    rgba(107,143,94,0.1);
-  --amber:       #D4813A;
-  --amber-bg:    rgba(212,129,58,0.1);
-  --red:         #C45A4A;
-  --red-bg:      rgba(196,90,74,0.1);
+  --olive-bg:    #EAF0E6;
+  --amber:       #C47030;
+  --amber-bg:    rgba(196,112,48,0.1);
+  --red:         #B84A3A;
+  --red-bg:      rgba(184,74,58,0.08);
 
   /* Typography */
   --font-serif:  'Instrument Serif', Georgia, serif;
