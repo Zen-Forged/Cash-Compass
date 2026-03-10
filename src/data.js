@@ -1,7 +1,7 @@
 // ─── WEBHOOK CONFIG ───────────────────────────────────────────────────────────
 // Set this to your Cloudflare Worker (or Apps Script Web App) URL.
 // Leave empty ('') to run on demo data — great for local preview.
-export const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzbw7fhkZFW3xP8dR9ZR_3u95jW1aAGslTE9ailbwCvK-ennXlzHhaeoYMhFxtnBjqSzw/exec';
+export const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxP-IMxZtYk-F1MbmgDsbch22lyqeMyxpVfoXVUGisogpVcAbPFJJAAPoFGgBayUHmc/exec';
 // Example: 'https://script.google.com/macros/s/AKfycbzbw7fhkZFW3xP8dR9ZR_3u95jW1aAGslTE9ailbwCvK-ennXlzHhaeoYMhFxtnBjqSzw/exec'
 
 // ─── PARSERS ──────────────────────────────────────────────────────────────────
