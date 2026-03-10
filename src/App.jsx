@@ -41,12 +41,10 @@ export default function App() {
     <div style={{ background:'var(--bg)', minHeight:'100vh', maxWidth:430,
       margin:'0 auto', position:'relative' }}>
 
-      {/* Subtle grid background */}
+      {/* Subtle paper texture */}
       <div style={{
-        position:'fixed', inset:0, pointerEvents:'none', zIndex:0, opacity:0.4,
-        backgroundImage:`linear-gradient(var(--border-soft) 1px, transparent 1px),
-                         linear-gradient(90deg, var(--border-soft) 1px, transparent 1px)`,
-        backgroundSize:'32px 32px',
+        position:'fixed', inset:0, pointerEvents:'none', zIndex:0, opacity:0.5,
+        backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E")`,
       }}/>
 
       <div style={{ position:'relative', zIndex:1, padding:'0 18px 80px' }}>
@@ -117,50 +115,53 @@ export default function App() {
             {/* ── HERO BLOCK ── */}
             <div style={anim(0.12)}>
 
-              {/* Primary balance card */}
+              {/* Primary balance card — compressed, neutral */}
               <div style={{
-                background:'linear-gradient(135deg, #0F1820 0%, #131E2B 50%, #162030 100%)',
+                background:'var(--bg-raised)',
                 border:'1px solid var(--border)',
-                borderRadius:16, padding:'22px 20px 20px',
+                borderRadius:16, padding:'16px 18px 14px',
                 position:'relative', overflow:'hidden', marginBottom:10,
-                boxShadow:'0 4px 32px rgba(0,0,0,0.4)',
+                boxShadow:'0 1px 8px rgba(0,0,0,0.05)',
               }}>
                 {/* Decorative arc */}
-                <svg style={{ position:'absolute', top:-40, right:-40, opacity:0.06 }}
-                  width="180" height="180" viewBox="0 0 180 180">
-                  <circle cx="90" cy="90" r="80" fill="none" stroke="#C9A84C" strokeWidth="1"/>
-                  <circle cx="90" cy="90" r="55" fill="none" stroke="#C9A84C" strokeWidth="0.5"/>
-                  <circle cx="90" cy="90" r="30" fill="none" stroke="#C9A84C" strokeWidth="0.5"/>
+                <svg style={{ position:'absolute', top:-20, right:-20, opacity:0.08 }}
+                  width="120" height="120" viewBox="0 0 120 120">
+                  <circle cx="60" cy="60" r="54" fill="none" stroke="var(--gold)" strokeWidth="1"/>
+                  <circle cx="60" cy="60" r="36" fill="none" stroke="var(--gold)" strokeWidth="0.5"/>
                 </svg>
 
-                <SectionLabel>Checking Balance</SectionLabel>
-                <div style={{ fontFamily:'var(--font-serif)', fontSize:46, color:'var(--ink)',
-                  lineHeight:1, letterSpacing:'-2px', marginBottom:4 }}>
-                  {usd(db.currentBalance)}
-                </div>
-                <div style={{ fontSize:10, color:'var(--ink-muted)', fontFamily:'var(--font-mono)' }}>
+                <div style={{ fontSize:9, letterSpacing:'0.1em', textTransform:'uppercase',
+                  color:'var(--ink-faint)', fontFamily:'var(--font-mono)', marginBottom:8 }}>
                   {fmtLong(db.forecastStartDate)}
                 </div>
 
-                <div style={{ height:1, background:'rgba(255,255,255,0.05)', margin:'18px 0 16px'}}/>
-
-                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end' }}>
+                {/* Balance + safe-to-spend on same row */}
+                <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', gap:8 }}>
                   <div>
-                    <SectionLabel>Safe to Spend</SectionLabel>
-                    <div style={{ fontFamily:'var(--font-serif)', fontSize:30,
-                      color: db.safeToSpend < 200 ? 'var(--gold)' : '#8FB07A', lineHeight:1 }}>
-                      {usd(db.safeToSpend)}
-                    </div>
-                    <div style={{ fontSize:10, color:'var(--ink-muted)', marginTop:3 }}>
-                      cushion above lowest point
+                    <SectionLabel>Checking Balance</SectionLabel>
+                    <div style={{ fontFamily:'var(--font-serif)', fontSize:38, color:'var(--ink)',
+                      lineHeight:1, letterSpacing:'-1.5px' }}>
+                      {usd(db.currentBalance)}
                     </div>
                   </div>
+                  <div style={{ textAlign:'right', paddingBottom:2 }}>
+                    <SectionLabel>Safe to Spend</SectionLabel>
+                    <div style={{ fontFamily:'var(--font-serif)', fontSize:24,
+                      color: db.safeToSpend < 200 ? 'var(--gold)' : 'var(--olive)', lineHeight:1 }}>
+                      {usd(db.safeToSpend)}
+                    </div>
+                    <div style={{ fontSize:9, color:'var(--ink-faint)', fontFamily:'var(--font-mono)',
+                      marginTop:2 }}>above lowest</div>
+                  </div>
+                </div>
+
+                <div style={{ display:'flex', justifyContent:'flex-end', marginTop:10 }}>
                   <PressureBadge label={db.pressureLabel}/>
                 </div>
               </div>
 
               {/* Tightest cash day */}
-              <Card glow="#C9A84C" style={{ borderLeft:'2px solid var(--gold-dim)' }}>
+              <Card style={{ borderLeft:'2px solid var(--gold-dim)' }}>
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start',
                   marginBottom:12 }}>
                   <div>
@@ -179,7 +180,7 @@ export default function App() {
                     <div style={{ fontSize:9, fontFamily:'var(--font-mono)',
                       color:'var(--gold-dim)', marginBottom:3 }}>buffer gap</div>
                     <div style={{ fontFamily:'var(--font-serif)', fontSize:17,
-                      color: db.bufferGapAtLowPoint > 0 ? 'var(--amber)' : '#6B8F5E' }}>
+                      color: db.bufferGapAtLowPoint > 0 ? 'var(--amber)' : 'var(--olive)' }}>
                       {db.bufferGapAtLowPoint > 0 ? usd(db.bufferGapAtLowPoint) : 'None'}
                     </div>
                   </div>
@@ -187,7 +188,7 @@ export default function App() {
 
                 <Divider my={10}/>
 
-                {/* AI Compass Read */}
+                {/* AI Compass Read — summary only */}
                 <div style={{ background:'var(--gold-bg)', border:'1px dashed var(--gold-dim)',
                   borderRadius:10, padding:'12px 13px' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:8 }}>
@@ -203,24 +204,10 @@ export default function App() {
                       </span>
                     )}
                   </div>
-                  <p style={{ fontSize:12.5, color:'#B8A878', lineHeight:1.75, margin:'0 0 10px',
+                  <p style={{ fontSize:12.5, color:'var(--gold)', lineHeight:1.75, margin:0,
                     fontFamily:'var(--font-serif)', fontStyle:'italic' }}>
                     {ins.summary || db.compressionSummary || 'Insight will appear once webhook is connected.'}
                   </p>
-                  {(ins.insight1 || ins.insight2 || ins.insight3) && (
-                    <div style={{ borderTop:'1px solid rgba(201,168,76,0.15)',
-                      paddingTop:10, display:'flex', flexDirection:'column', gap:7 }}>
-                      {[ins.insight1, ins.insight2, ins.insight3].filter(Boolean).map((text, i) => (
-                        <div key={i} style={{ display:'flex', gap:8, alignItems:'flex-start' }}>
-                          <span style={{ color:'var(--gold-dim)', fontSize:10,
-                            marginTop:2, flexShrink:0 }}>◦</span>
-                          <p style={{ fontSize:11.5, color:'#907A50', lineHeight:1.65, margin:0 }}>
-                            {text}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </Card>
             </div>
@@ -252,17 +239,51 @@ export default function App() {
                   <div style={{ flex:1, paddingLeft:16 }}>
                     <MetricRow label="lowest balance"
                       value={usd(db.lowestBalance)}
-                      valueColor={db.bufferGapAtLowPoint > 0 ? 'var(--amber)' : '#6B8F5E'}/>
+                      valueColor={db.bufferGapAtLowPoint > 0 ? 'var(--amber)' : 'var(--olive)'}/>
                     <MetricRow label="tightest day"    value={fmt(db.tightestCashDay)}/>
                     <MetricRow label="days below buffer" value={db.daysBelowBuffer}
-                      valueColor={db.daysBelowBuffer > 0 ? 'var(--amber)' : '#6B8F5E'}/>
+                      valueColor={db.daysBelowBuffer > 0 ? 'var(--amber)' : 'var(--olive)'}/>
                     <MetricRow label="compression"     value={db.compressionType}
                       valueColor="var(--ink-muted)" style={{ borderBottom:'none' }}/>
                   </div>
                 </div>
+
+                {/* Transactions driving pressure on tightest day */}
+                {(() => {
+                  const tight = db.tightestCashDay;
+                  const dayTx = fc.filter(f => f.date === tight && f.type === 'Expense');
+                  if (!dayTx.length) return null;
+                  const total = dayTx.reduce((s, f) => s + Math.abs(f.usedAmount || f.plannedAmount || 0), 0);
+                  return (
+                    <div style={{ marginTop:12, background:'var(--gold-bg)',
+                      border:'1px solid var(--border)', borderRadius:10, padding:'10px 12px' }}>
+                      <div style={{ fontSize:9, fontFamily:'var(--font-mono)', letterSpacing:'0.1em',
+                        textTransform:'uppercase', color:'var(--ink-faint)', marginBottom:8 }}>
+                        What hits on {fmt(tight)} · {dayTx.length} transaction{dayTx.length > 1 ? 's' : ''} · {usd(total)} out
+                      </div>
+                      <div style={{ display:'flex', flexDirection:'column', gap:6 }}>
+                        {dayTx.map((f, i) => (
+                          <div key={i} style={{ display:'flex', justifyContent:'space-between',
+                            alignItems:'center', fontSize:11 }}>
+                            <div style={{ display:'flex', alignItems:'center', gap:7 }}>
+                              <span style={{ fontSize:9, color:'var(--ink-faint)',
+                                fontFamily:'var(--font-mono)' }}>{f.category}</span>
+                              <span style={{ color:'var(--ink)' }}>{f.description}</span>
+                            </div>
+                            <span style={{ fontFamily:'var(--font-mono)', fontSize:11,
+                              color:'var(--amber)', flexShrink:0 }}>
+                              −{usd(Math.abs(f.usedAmount || f.plannedAmount || 0))}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 {db.unclearedTransactions > 0 && (
                   <div style={{ background:'var(--gold-bg)', border:'1px solid var(--gold-dim)',
-                    borderRadius:8, padding:'8px 11px', fontSize:11,
+                    borderRadius:8, padding:'8px 11px', fontSize:11, marginTop:10,
                     color:'var(--gold)', fontFamily:'var(--font-mono)',
                     display:'flex', justifyContent:'space-between' }}>
                     <span>uncleared transactions</span>
@@ -295,6 +316,28 @@ export default function App() {
                   left={db.lifeLeftThisMonth} period="this month"/>
               </Card>
             </div>
+
+            {/* ── INSIGHTS ── */}
+            {(ins.insight1 || ins.insight2 || ins.insight3) && (
+              <div style={anim(0.50)}>
+                <SectionHead icon="✦" title="What to Know"/>
+                <Card>
+                  <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+                    {[ins.insight1, ins.insight2, ins.insight3].filter(Boolean).map((text, i) => (
+                      <div key={i} style={{ display:'flex', gap:10, alignItems:'flex-start',
+                        paddingBottom: i < 2 ? 12 : 0,
+                        borderBottom: i < 2 ? '1px solid var(--border-soft)' : 'none' }}>
+                        <span style={{ color:'var(--gold)', fontSize:11, marginTop:1,
+                          flexShrink:0, fontFamily:'var(--font-mono)' }}>{i + 1}</span>
+                        <p style={{ fontSize:12, color:'var(--ink-muted)', lineHeight:1.7, margin:0 }}>
+                          {text}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </div>
+            )}
 
             {/* ── WHERE YOU LAND ── */}
             <div style={anim(0.54)}>
