@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Cash Compass — Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#E8E2D9; --ink-muted:#8A8278; --ink-faint:#3D3830;
+  --bg:#0D1117; --bg-raised:#141920; --bg-float:#1A2030; --bg-hover:#1F2738;
+  --border:#232C3B; --border-soft:#1C2332;
+  --gold:#C9A84C; --gold-dim:#8A6E2A; --gold-glow:rgba(201,168,76,0.12); --gold-bg:rgba(201,168,76,0.07);
+  --olive:#6B8F5E; --olive-dim:#3E5435; --olive-bg:rgba(107,143,94,0.1);
+  --amber:#D4813A; --amber-bg:rgba(212,129,58,0.1);
+  --font-serif:'Instrument Serif',Georgia,serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --font-sans:'Geist',system-ui,sans-serif;
+}
+html,body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+@keyframes shimmer{0%{background-position:-400px 0}100%{background-position:400px 0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.app{max-width:430px;margin:0 auto;padding:0 18px 80px;position:relative;animation:fadeUp 0.5s ease both}
+
+/* Grid bg */
+.grid-bg{position:fixed;inset:0;pointer-events:none;opacity:.35;z-index:0;
+  background-image:linear-gradient(var(--border-soft) 1px,transparent 1px),
+  linear-gradient(90deg,var(--border-soft) 1px,transparent 1px);
+  background-size:32px 32px}
+.content{position:relative;z-index:1}
+
+/* Banner */
+.banner{background:var(--gold-bg);border:1px solid var(--gold-dim);border-radius:10px;
+  padding:9px 13px;margin-top:14px;font-size:11px;color:var(--gold);
+  font-family:var(--font-mono);display:flex;align-items:center;gap:8px}
+
+/* Header */
+.header{padding-top:14px;padding-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start}
+.logo{display:flex;align-items:center;gap:10px}
+.logo h1{font-family:var(--font-serif);font-size:22px;font-weight:400;color:var(--ink);letter-spacing:-0.4px;line-height:1}
+.logo p{font-size:10px;color:var(--ink-muted);font-family:var(--font-mono);margin-top:3px}
+.win-toggle{display:flex;background:var(--bg-raised);border:1px solid var(--border);border-radius:8px;padding:2px;gap:1px}
+.win-btn{border:none;border-radius:6px;padding:4px 11px;font-family:var(--font-mono);font-size:11px;transition:all .15s}
+.win-btn.on{background:var(--bg-float);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.win-btn.off{background:transparent;color:var(--ink-muted)}
+
+/* Cards */
+.card{background:var(--bg-raised);border:1px solid var(--border);border-radius:14px;padding:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,.2);margin-bottom:10px}
+.card-gold{border-left:2px solid var(--gold-dim);box-shadow:0 0 0 1px rgba(201,168,76,0.08),0 4px 24px rgba(201,168,76,0.06)}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,#0F1820 0%,#131E2B 50%,#162030 100%);
+  border:1px solid var(--border);border-radius:16px;padding:22px 20px 20px;
+  position:relative;overflow:hidden;margin-bottom:10px;
+  box-shadow:0 4px 32px rgba(0,0,0,.4)}
+.deco-rings{position:absolute;top:-40px;right:-40px;pointer-events:none}
+
+/* Labels */
+.sect-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);font-family:var(--font-mono);margin-bottom:6px}
+.sect-head{margin-bottom:12px;margin-top:28px}
+.sect-head h2{font-family:var(--font-serif);font-size:19px;font-weight:400;color:var(--ink);
+  letter-spacing:-.3px;margin:0;display:flex;align-items:center;gap:8px}
+.sect-head .icon{font-size:14px;opacity:.5}
+.sect-head p{font-size:11px;color:var(--ink-muted);margin-top:3px;margin-left:22px}
+
+/* Divider */
+.divider{height:1px;background:var(--border-soft);margin:12px 0}
+
+/* Pressure badge */
+.badge{display:inline-flex;align-items:center;gap:5px;background:rgba(107,143,94,.12);
+  border:1px solid rgba(107,143,94,.25);color:#6B8F5E;border-radius:100px;
+  padding:3px 10px 3px 7px;font-size:11px;font-weight:500;font-family:var(--font-mono)}
+.badge .dot{width:6px;height:6px;border-radius:50%;background:#6B8F5E;display:inline-block}
+
+/* Budget bar */
+.budget-bar{background:var(--bg-float);border-radius:2px;height:4px;overflow:hidden;
+  border:1px solid var(--border-soft);margin:7px 0 4px}
+.budget-fill{height:100%;border-radius:2px;background:var(--olive);opacity:.7;transition:width 1.4s ease}
+
+/* Compass Read */
+.compass-read{background:var(--gold-bg);border:1px dashed var(--gold-dim);border-radius:10px;padding:12px 13px}
+.compass-read-header{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.compass-read p{font-size:12.5px;color:#B8A878;line-height:1.75;margin:0 0 10px;
+  font-family:var(--font-serif);font-style:italic}
+.insights-list{border-top:1px solid rgba(201,168,76,.15);padding-top:10px;
+  display:flex;flex-direction:column;gap:7px}
+.insight-item{display:flex;gap:8px;align-items:flex-start}
+.insight-item span{color:var(--gold-dim);font-size:10px;margin-top:2px;flex-shrink:0}
+.insight-item p{font-size:11.5px;color:#907A50;line-height:1.65;margin:0}
+
+/* Metric row */
+.metric-row{display:flex;justify-content:space-between;align-items:center;
+  padding:9px 0;border-bottom:1px solid var(--border-soft)}
+.metric-row:last-child{border-bottom:none}
+.metric-label{font-size:11px;color:var(--ink-muted);font-family:var(--font-mono)}
+.metric-value{font-family:var(--font-serif);font-size:15px;color:var(--ink)}
+
+/* Arc gauge */
+.arc-wrap{display:flex;flex-direction:column;align-items:center}
+
+/* Upcoming items */
+.week-nav{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.nav-btn{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);
+  background:var(--bg-float);color:var(--ink-muted);display:flex;align-items:center;
+  justify-content:center;font-size:16px;transition:all .15s}
+.week-net{display:flex;justify-content:space-between;align-items:center;
+  background:var(--olive-bg);border:1px solid rgba(107,143,94,.2);
+  border-radius:8px;padding:7px 12px;margin-bottom:16px}
+.day-header{display:flex;justify-content:space-between;align-items:baseline;
+  padding-bottom:7px;border-bottom:1px solid var(--border-soft);margin-bottom:2px}
+.item-row{display:flex;align-items:center;gap:10px;padding:8px 0;
+  border-bottom:1px solid var(--border-soft)}
+.item-row:last-child{border-bottom:none}
+.item-icon{width:28px;height:28px;border-radius:7px;flex-shrink:0;
+  background:var(--bg-float);border:1px solid var(--border-soft);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:var(--ink-muted)}
+.item-icon.income{background:var(--olive-bg);border-color:rgba(107,143,94,.2);color:#6B8F5E}
+.dots{display:flex;justify-content:center;gap:5px;margin-top:18px}
+.dot-btn{height:5px;border-radius:3px;border:none;padding:0;transition:all .22s ease;cursor:pointer}
+
+/* Footer */
+.footer{margin-top:48px;text-align:center;padding-bottom:8px}
+.footer-rule{display:flex;justify-content:center;align-items:center;gap:10px;margin-bottom:8px;opacity:.3}
+.footer-rule .line{height:1px;width:40px;background:var(--border)}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="app content">
+
+  <!-- Banner -->
+  <div class="banner">
+    <span>◉</span>
+    <span>Preview mode — data from your CSV files. Set <code>WEBHOOK_URL</code> in <code>src/data.js</code> to connect live.</span>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="#8A6E2A" stroke-width="1"/>
+        <circle cx="12" cy="12" r="6" stroke="#8A6E2A" stroke-width="0.5" opacity=".5"/>
+        <line x1="12" y1="2" x2="12" y2="5" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="12" y1="19" x2="12" y2="22" stroke="#8A6E2A" stroke-width="1" stroke-linecap="round"/>
+        <line x1="2" y1="12" x2="5" y2="12" stroke="#8A6E2A" stroke-width="1" stroke-linecap="round"/>
+        <line x1="19" y1="12" x2="22" y2="12" stroke="#8A6E2A" stroke-width="1" stroke-linecap="round"/>
+        <polygon points="12,3 13,10 12,13 11,10" fill="#C9A84C"/>
+        <polygon points="12,21 11,14 12,11 13,14" fill="#8A6E2A" opacity=".5"/>
+        <circle cx="12" cy="12" r="1.5" fill="#C9A84C"/>
+      </svg>
+      <div>
+        <h1>Cash Compass</h1>
+        <p>45d view · Mar 10, 2026</p>
+      </div>
+    </div>
+    <div class="win-toggle">
+      <button class="win-btn off">14d</button>
+      <button class="win-btn off">30d</button>
+      <button class="win-btn on">45d</button>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero" style="animation:fadeUp .6s .1s ease both">
+    <svg class="deco-rings" width="180" height="180" viewBox="0 0 180 180">
+      <circle cx="90" cy="90" r="80" fill="none" stroke="#C9A84C" stroke-width="1" opacity=".06"/>
+      <circle cx="90" cy="90" r="55" fill="none" stroke="#C9A84C" stroke-width=".5" opacity=".06"/>
+      <circle cx="90" cy="90" r="30" fill="none" stroke="#C9A84C" stroke-width=".5" opacity=".06"/>
+    </svg>
+    <div class="sect-label">Checking Balance</div>
+    <div style="font-family:var(--font-serif);font-size:46px;color:var(--ink);line-height:1;letter-spacing:-2px;margin-bottom:4px">$2,057.74</div>
+    <div style="font-size:10px;color:var(--ink-muted);font-family:var(--font-mono)">March 10, 2026</div>
+    <div style="height:1px;background:rgba(255,255,255,.05);margin:18px 0 16px"></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end">
+      <div>
+        <div class="sect-label">Safe to Spend</div>
+        <div style="font-family:var(--font-serif);font-size:30px;color:#8FB07A;line-height:1">$108.95</div>
+        <div style="font-size:10px;color:var(--ink-muted);margin-top:3px">cushion above lowest point</div>
+      </div>
+      <div class="badge"><span class="dot"></span>Stable</div>
+    </div>
+  </div>
+
+  <!-- Tightest Cash Day -->
+  <div class="card card-gold" style="animation:fadeUp .6s .18s ease both">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+      <div>
+        <div class="sect-label">Tightest Cash Day</div>
+        <div style="font-family:var(--font-serif);font-size:28px;color:var(--gold);letter-spacing:-.5px;line-height:1">$608.95</div>
+        <div style="font-size:11px;color:var(--ink-muted);margin-top:3px;font-family:var(--font-mono)">Mar 20 · Stable</div>
+      </div>
+      <div style="background:var(--gold-bg);border:1px solid var(--gold-dim);border-radius:10px;padding:8px 12px;text-align:center;flex-shrink:0">
+        <div style="font-size:9px;font-family:var(--font-mono);color:var(--gold-dim);margin-bottom:3px">buffer gap</div>
+        <div style="font-family:var(--font-serif);font-size:17px;color:#6B8F5E">None</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="compass-read">
+      <div class="compass-read-header">
+        <span style="font-size:12px">✦</span>
+        <span style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-family:var(--font-mono);font-weight:500">Compass Read</span>
+        <span style="font-size:9px;color:var(--ink-muted);font-family:var(--font-mono);margin-left:auto">Mar 10</span>
+      </div>
+      <p>Cash flow remains stable across the next 45 days with the balance staying comfortably above the buffer and about $1.4K of safe spending flexibility.</p>
+      <div class="insights-list">
+        <div class="insight-item"><span>◦</span><p>The tightest point occurs March 20 with a projected balance near $1,957, which still maintains a strong cushion above the protected minimum.</p></div>
+        <div class="insight-item"><span>◦</span><p>Spending flexibility remains healthy with roughly $1,457 available above the lowest projected balance, allowing discretionary spending with reasonable caution.</p></div>
+        <div class="insight-item"><span>◦</span><p>Only minimal uncleared transactions are currently affecting the forecast, and both weekly food and monthly life budgets remain largely intact.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Forecast Chart -->
+  <div style="animation:fadeUp .6s .26s ease both">
+    <div class="sect-head">
+      <h2><span class="icon">◌</span>Cash Flow Horizon</h2>
+      <p>45-day trajectory from Mar 10</p>
+    </div>
+    <div class="card" style="padding:16px 8px 12px 12px">
+      <svg viewBox="0 0 336 168" style="width:100%;display:block;overflow:visible">
+        <defs>
+          <linearGradient id="ga" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#6B8F5E" stop-opacity=".25"/>
+            <stop offset="100%" stop-color="#6B8F5E" stop-opacity=".01"/>
+          </linearGradient>
+          <linearGradient id="gl" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#6B8F5E"/>
+            <stop offset="55%" stop-color="#8FB07A"/>
+            <stop offset="100%" stop-color="#C9A84C"/>
+          </linearGradient>
+        </defs>
+        <!-- Grid lines -->
+        <line x1="36" y1="10"  x2="316" y2="10"  stroke="#1C2332" stroke-width="1"/>
+        <line x1="36" y1="47"  x2="316" y2="47"  stroke="#1C2332" stroke-width="1"/>
+        <line x1="36" y1="84"  x2="316" y2="84"  stroke="#1C2332" stroke-width="1"/>
+        <line x1="36" y1="121" x2="316" y2="121" stroke="#1C2332" stroke-width="1"/>
+        <text x="30" y="14"  fill="#3D4858" font-size="8" text-anchor="end" font-family="'JetBrains Mono',monospace">6k</text>
+        <text x="30" y="51"  fill="#3D4858" font-size="8" text-anchor="end" font-family="'JetBrains Mono',monospace">4k</text>
+        <text x="30" y="88"  fill="#3D4858" font-size="8" text-anchor="end" font-family="'JetBrains Mono',monospace">2k</text>
+        <text x="30" y="125" fill="#3D4858" font-size="8" text-anchor="end" font-family="'JetBrains Mono',monospace">0k</text>
+        <!-- Buffer line -->
+        <line x1="36" y1="111" x2="316" y2="111" stroke="#C9A84C" stroke-width="1" stroke-dasharray="5 4" opacity=".5"/>
+        <text x="42" y="107" fill="#C9A84C" font-size="7.5" opacity=".7" font-family="'JetBrains Mono',monospace">buffer $500</text>
+        <!-- Compression zone (Mar 14-22 area) -->
+        <rect x="50" y="109" width="80" height="30" fill="rgba(201,168,76,0.07)" rx="2"/>
+        <!-- Area fill (approximate path based on forecast data) -->
+        <path d="M 36,121 L 50,100 L 68,103 L 72,104 L 76,108 L 80,116 L 84,102 L 90,101 L 96,106 L 100,114 L 104,115 L 108,103 L 116,88 L 120,90 L 130,78 L 140,84 L 150,77 L 154,80 L 158,80 L 162,80 L 166,80 L 180,78 L 184,78 L 196,36 L 200,37 L 204,38 L 208,37 L 212,20 L 216,22 L 220,37 L 224,38 L 228,39 L 236,22 L 240,23 L 244,35 L 248,36 L 252,37 L 260,55 L 264,56 L 268,65 L 272,64 L 276,60 L 280,48 L 284,49 L 288,50 L 292,66 L 296,67 L 300,57 L 304,58 L 316,52 L 316,121 Z" fill="url(#ga)"/>
+        <!-- Line -->
+        <polyline points="36,100 50,100 68,103 72,104 76,108 80,116 84,102 90,101 96,106 100,114 104,115 108,103 116,88 120,90 130,78 140,84 150,77 154,80 158,80 162,80 166,80 180,78 184,78 196,36 200,37 204,38 208,37 212,20 216,22 220,37 224,38 228,39 236,22 240,23 244,35 248,36 252,37 260,55 264,56 268,65 272,64 276,60 280,48 284,49 288,50 292,66 296,67 300,57 304,58 316,52"
+          fill="none" stroke="rgba(107,143,94,.3)" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+        <polyline points="36,100 50,100 68,103 72,104 76,108 80,116 84,102 90,101 96,106 100,114 104,115 108,103 116,88 120,90 130,78 140,84 150,77 154,80 158,80 162,80 166,80 180,78 184,78 196,36 200,37 204,38 208,37 212,20 216,22 220,37 224,38 228,39 236,22 240,23 244,35 248,36 252,37 260,55 264,56 268,65 272,64 276,60 280,48 284,49 288,50 292,66 296,67 300,57 304,58 316,52"
+          fill="none" stroke="url(#gl)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <!-- Low point callout at Mar 20 (x≈108) -->
+        <line x1="108" y1="109" x2="108" y2="95" stroke="#C9A84C" stroke-width="1" stroke-dasharray="2 2" opacity=".7"/>
+        <rect x="80" y="81" width="56" height="15" rx="3" fill="#C9A84C" opacity=".95"/>
+        <text x="108" y="91" fill="#0D1117" font-size="8" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-weight="500">$608.95</text>
+        <circle cx="108" cy="114" r="5" fill="var(--bg-raised)" stroke="#C9A84C" stroke-width="2"/>
+        <circle cx="108" cy="114" r="2" fill="#C9A84C"/>
+        <!-- Income dots (DoorDash, Aline, etc.) -->
+        <circle cx="80"  cy="116" r="4" fill="var(--bg-raised)" stroke="#6B8F5E" stroke-width="1.5"/>
+        <circle cx="120" cy="90"  r="4" fill="var(--bg-raised)" stroke="#6B8F5E" stroke-width="1.5"/>
+        <circle cx="140" cy="84"  r="4" fill="var(--bg-raised)" stroke="#6B8F5E" stroke-width="1.5"/>
+        <circle cx="150" cy="77"  r="4" fill="var(--bg-raised)" stroke="#6B8F5E" stroke-width="1.5"/>
+        <circle cx="196" cy="36"  r="4" fill="var(--bg-raised)" stroke="#6B8F5E" stroke-width="1.5"/>
+        <circle cx="212" cy="20"  r="4" fill="var(--bg-raised)" stroke="#6B8F5E" stroke-width="1.5"/>
+        <!-- Start dot -->
+        <circle cx="36"  cy="100" r="4" fill="var(--bg-raised)" stroke="#6B8F5E" stroke-width="2"/>
+        <!-- Date ticks -->
+        <text x="36"  y="157" fill="#3D4858" font-size="8" text-anchor="middle" font-family="'JetBrains Mono',monospace">Mar 10</text>
+        <text x="116" y="157" fill="#3D4858" font-size="8" text-anchor="middle" font-family="'JetBrains Mono',monospace">Mar 17</text>
+        <text x="196" y="157" fill="#3D4858" font-size="8" text-anchor="middle" font-family="'JetBrains Mono',monospace">Mar 24</text>
+        <text x="276" y="157" fill="#3D4858" font-size="8" text-anchor="middle" font-family="'JetBrains Mono',monospace">Apr 7</text>
+      </svg>
+    </div>
+    <p style="font-size:11px;color:var(--ink-muted);line-height:1.65;margin-top:9px;padding-left:2px">
+      Forecast remains above buffer through the window.
+    </p>
+  </div>
+
+  <!-- Pressure Summary -->
+  <div style="animation:fadeUp .6s .34s ease both">
+    <div class="sect-head">
+      <h2><span class="icon">⊙</span>Pressure Summary</h2>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <!-- Arc gauge -->
+        <div class="arc-wrap">
+          <svg viewBox="0 0 100 60" style="width:110px">
+            <!-- Track -->
+            <path d="M 12.93 87.07 A 38 38 0 1 1 87.07 87.07" fill="none" stroke="var(--bg-float)" stroke-width="7" stroke-linecap="round"/>
+            <!-- Fill — 84.3% of arc -->
+            <path d="M 12.93 87.07 A 38 38 0 1 1 84.1 60.3" fill="none" stroke="#C9A84C" stroke-width="7" stroke-linecap="round"/>
+            <text x="50" y="46" text-anchor="middle" font-family="var(--font-serif)" font-size="16" fill="var(--ink)">84.3</text>
+          </svg>
+          <div style="font-size:10px;color:var(--ink-muted);font-family:var(--font-mono);margin-top:-4px;text-align:center;line-height:1.4">
+            pressure score · <span style="color:#C9A84C">Stable</span>
+          </div>
+        </div>
+        <!-- Metrics -->
+        <div style="flex:1;padding-left:16px">
+          <div class="metric-row"><span class="metric-label">lowest balance</span><span class="metric-value" style="color:#6B8F5E">$608.95</span></div>
+          <div class="metric-row"><span class="metric-label">tightest day</span><span class="metric-value">Mar 20</span></div>
+          <div class="metric-row"><span class="metric-label">days below buffer</span><span class="metric-value" style="color:#6B8F5E">0</span></div>
+          <div class="metric-row" style="border-bottom:none"><span class="metric-label">compression</span><span class="metric-value" style="color:var(--ink-muted)">Stable</span></div>
+        </div>
+      </div>
+      <div style="background:var(--gold-bg);border:1px solid var(--gold-dim);border-radius:8px;padding:8px 11px;font-size:11px;color:var(--gold);font-family:var(--font-mono);display:flex;justify-content:space-between">
+        <span>uncleared transactions</span><span>$35.00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upcoming Items -->
+  <div style="animation:fadeUp .6s .42s ease both">
+    <div class="sect-head">
+      <h2><span class="icon">⟳</span>The Journey Ahead</h2>
+      <p>Week-by-week scheduled items</p>
+    </div>
+    <div class="card">
+      <!-- Nav -->
+      <div class="week-nav">
+        <button class="nav-btn" style="color:var(--ink-faint);background:transparent">‹</button>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:12px;font-weight:500;color:var(--ink)">Mar 16 – Mar 22</div>
+          <div style="font-size:10px;font-family:var(--font-mono);color:var(--ink-muted);margin-top:1px">wk 2/7 · low $608.95</div>
+        </div>
+        <button class="nav-btn">›</button>
+      </div>
+      <!-- Week net -->
+      <div class="week-net">
+        <span style="font-size:11px;color:var(--ink-muted);font-family:var(--font-mono)">week net</span>
+        <span style="font-family:var(--font-mono);font-size:12px;font-weight:500;color:#D4813A">-$182.79</span>
+      </div>
+      <!-- Day: Mar 18 -->
+      <div style="margin-bottom:20px">
+        <div class="day-header">
+          <span style="font-size:11px;font-weight:500;color:var(--ink);font-family:var(--font-mono)">Tue, Mar 18</span>
+          <div style="display:flex;align-items:baseline;gap:10px">
+            <span style="font-size:9px;color:var(--ink-faint);font-family:var(--font-mono)">bal $1,643.54</span>
+            <span style="font-family:var(--font-mono);font-size:10px;color:#8A8278">-$21.20</span>
+          </div>
+        </div>
+        <div class="item-row">
+          <div class="item-icon">∞</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;color:var(--ink)">ChatGPT</div>
+            <div style="font-size:10px;color:var(--ink-muted);font-family:var(--font-mono);margin-top:1px">Subscriptions</div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--ink)">−$21.20</div>
+        </div>
+      </div>
+      <!-- Day: Mar 20 -->
+      <div>
+        <div class="day-header">
+          <span style="font-size:11px;font-weight:500;color:var(--ink);font-family:var(--font-mono)">Fri, Mar 20</span>
+          <div style="display:flex;align-items:baseline;gap:10px">
+            <span style="font-size:9px;color:var(--ink-faint);font-family:var(--font-mono)">bal $2,696.95</span>
+            <span style="font-family:var(--font-mono);font-size:10px;color:#6B8F5E">+$1,223.41</span>
+          </div>
+        </div>
+        <div class="item-row">
+          <div class="item-icon">◈</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;color:var(--ink)">American Express</div>
+            <div style="font-size:10px;color:var(--ink-muted);font-family:var(--font-mono);margin-top:1px">Credit</div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--ink)">−$241.00</div>
+        </div>
+        <div class="item-row">
+          <div class="item-icon">◈</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;color:var(--ink)">Third Federal</div>
+            <div style="font-size:10px;color:var(--ink-muted);font-family:var(--font-mono);margin-top:1px">Credit</div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:12px;font-weight:500;color:var(--ink)">−$623.59</div>
+        </div>
+        <div class="item-row" style="border-bottom:none">
+          <div class="item-icon income">↑</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;color:var(--ink)">Aline Ops</div>
+            <div style="font-size:10px;color:var(--ink-muted);font-family:var(--font-mono);margin-top:1px">Employment</div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:12px;font-weight:500;color:#6B8F5E">+$2,088.00</div>
+        </div>
+      </div>
+      <!-- Dots -->
+      <div class="dots">
+        <button class="dot-btn" style="width:5px;background:var(--border)"></button>
+        <button class="dot-btn" style="width:18px;background:var(--gold)"></button>
+        <button class="dot-btn" style="width:5px;background:var(--border)"></button>
+        <button class="dot-btn" style="width:5px;background:var(--border)"></button>
+        <button class="dot-btn" style="width:5px;background:var(--border)"></button>
+        <button class="dot-btn" style="width:5px;background:var(--border)"></button>
+        <button class="dot-btn" style="width:5px;background:var(--border)"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Budget Snapshot -->
+  <div style="animation:fadeUp .6s .50s ease both">
+    <div class="sect-head">
+      <h2><span class="icon">◧</span>Budget Snapshot</h2>
+    </div>
+    <div class="card">
+      <!-- Food -->
+      <div style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px">
+          <span style="font-size:12px;color:var(--ink)">Food This Week</span>
+          <div>
+            <span style="font-family:var(--font-serif);font-size:16px">$150.00</span>
+            <span style="font-size:10px;color:var(--ink-muted);margin-left:4px">left this week</span>
+          </div>
+        </div>
+        <div class="budget-bar"><div class="budget-fill" style="width:0%"></div></div>
+        <div style="font-size:10px;color:var(--ink-muted);font-family:var(--font-mono);display:flex;justify-content:space-between">
+          <span>$0 spent</span><span>$150 budget</span>
+        </div>
+      </div>
+      <div class="divider" style="margin:0 0 16px"></div>
+      <!-- Life -->
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px">
+          <span style="font-size:12px;color:var(--ink)">Life Budget</span>
+          <div>
+            <span style="font-family:var(--font-serif);font-size:16px">$139.79</span>
+            <span style="font-size:10px;color:var(--ink-muted);margin-left:4px">left this month</span>
+          </div>
+        </div>
+        <div class="budget-bar"><div class="budget-fill" style="width:30%"></div></div>
+        <div style="font-size:10px;color:var(--ink-muted);font-family:var(--font-mono);display:flex;justify-content:space-between">
+          <span>$60.21 spent</span><span>$200 budget</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Where You Land -->
+  <div style="animation:fadeUp .6s .58s ease both">
+    <div class="sect-head">
+      <h2><span class="icon">◎</span>Where You Land</h2>
+      <p>Projected balance by Apr 24</p>
+    </div>
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div class="sect-label">Ending Balance</div>
+        <div style="font-family:var(--font-serif);font-size:32px;color:#8FB07A;letter-spacing:-.5px;line-height:1">$4,180.03</div>
+        <div style="font-size:10px;color:var(--ink-muted);font-family:var(--font-mono);margin-top:4px">Apr 24, 2026</div>
+      </div>
+      <div style="text-align:right">
+        <div class="sect-label">Net Change</div>
+        <div style="font-family:var(--font-serif);font-size:22px;color:#8FB07A">+$2,122.29</div>
+        <div style="font-size:10px;color:var(--ink-muted);margin-top:2px">building</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer" style="animation:fadeUp .6s .64s ease both">
+    <div class="footer-rule">
+      <div class="line"></div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="#8A6E2A" stroke-width="1"/>
+        <polygon points="12,3 13,10 12,13 11,10" fill="#C9A84C"/>
+        <circle cx="12" cy="12" r="1.5" fill="#C9A84C"/>
+      </svg>
+      <div class="line"></div>
+    </div>
+    <p style="font-size:10px;color:var(--ink-faint);font-family:var(--font-mono)">Cash Compass · preview mode</p>
+  </div>
+
+</div>
+</body>
+</html>
